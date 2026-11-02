@@ -42,7 +42,7 @@ import { stackedThreadToast, toastManager } from "../ui/toast";
 import { ITEM_ROW_CLASSNAME, ITEM_ROW_INNER_CLASSNAME } from "./itemRows";
 import { LinkAccessPicker } from "./LinkAccessPicker";
 import { ANOTHER_ADDRESS, LinkMachineSelect } from "./LinkMachineSelect";
-import { SettingsRow, SettingsSection } from "./settingsLayout";
+import { InfoTooltip, SettingsRow, SettingsSection } from "./settingsLayout";
 import { useNowMinute } from "../../hooks/useNowMinute";
 import { searchableSetting } from "./settingsSearch";
 
@@ -65,6 +65,13 @@ export function LinkedEnvironmentsSettings({
     <SettingsSection
       {...(isSearchTarget ? { id: search.id } : {})}
       title={environmentLabel === null ? search.title : `${search.title} · ${environmentLabel}`}
+      titleAction={
+        <InfoTooltip label="About linked environments">
+          {
+            "Machines this environment's agents can work on. A link lets an agent here launch and drive threads on another machine, such as a VPS. It does not add that machine to your sidebar."
+          }
+        </InfoTooltip>
+      }
       headerAction={canLink ? <LinkEnvironmentAction environmentId={environmentId} /> : null}
     >
       {links.error ? (

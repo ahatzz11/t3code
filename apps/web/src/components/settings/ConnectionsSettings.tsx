@@ -33,7 +33,7 @@ import {
   resolveLocalVersionStatusLabel,
   resolveTailscaleServeBaseUrl,
 } from "./ConnectionsSettings.logic";
-import { SettingsPageContainer, SettingsRow, SettingsSection } from "./settingsLayout";
+import { InfoTooltip, SettingsPageContainer, SettingsRow, SettingsSection } from "./settingsLayout";
 import { ManagedByOrganization } from "../ManagedPolicy";
 import { LocalEnvironmentSetting } from "./LocalEnvironmentSetting";
 import { searchableSetting } from "./settingsSearch";
@@ -1484,6 +1484,13 @@ export function ConnectionsSettings({ view }: { readonly view: "environments" | 
       <SettingsSection
         {...searchableSetting("remote-environments")}
         title="Environments"
+        titleAction={
+          <InfoTooltip label="About environments">
+            {
+              "Machines this app connects to. Each one runs its own T3 server with its own projects, threads and provider accounts, and shows up in your sidebar."
+            }
+          </InfoTooltip>
+        }
         headerAction={
           <div className="flex items-center gap-1">
             {savedServerUpdateTargets.length > 0 ? (
