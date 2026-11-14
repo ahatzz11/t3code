@@ -713,16 +713,18 @@ const make = Effect.gen(function* () {
 
   // Nothing watches an idle worktree, so its threads still record the branch it left.
   // Record the checked-out one so the next sweep can apply the rules to it.
-  const followBranch = Effect.fn("StorageCleanup.followBranch")(function* (worktreePath: string) {
-    yield* Effect.gen(function* () {
+  const followBranch = Effect.fn("StorageCleanup.followBranch")(
+    function* (worktreePath: string) {
       const cwd = yield* fs.realPath(worktreePath);
       yield* reconcileBranch({ cwd, refName: yield* gitWorkflow.currentBranch(cwd) });
-    }).pipe(
-      Effect.catchCause((cause) =>
-        Effect.logWarning("Failed to reconcile worktree branch", { cwd: worktreePath, cause }),
+    },
+    (effect, worktreePath) =>
+      effect.pipe(
+        Effect.catchCause((cause) =>
+          Effect.logWarning("Failed to reconcile worktree branch", { cwd: worktreePath, cause }),
+        ),
       ),
-    );
-  });
+  );
 
   // Git status and non-forced worktree removal both skip assume-unchanged and skip-worktree files.
   const hiddenTrackedChange = Effect.fn("StorageCleanup.hiddenTrackedChange")(function* (

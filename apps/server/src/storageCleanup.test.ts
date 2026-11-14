@@ -2908,7 +2908,8 @@ describe("storage cleanup reports and local file policies", () => {
   it.live("compares the checked-out branch without a full status", () =>
     runCleanupTest(
       Effect.gen(function* () {
-        const { service, fs, repo, worktree, command, fullStatusCalls } = yield* cleanupFixture();
+        const { service, fs, repo, worktree, command, fullStatusCalls, threadBranches } =
+          yield* cleanupFixture();
         const changed = { outcome: "kept", reason: "Repository or branch changed" };
         yield* command(worktree, ["checkout", "--detach"]);
         expect((yield* service.runNow).entries[0]).toMatchObject(changed);
@@ -2918,6 +2919,8 @@ describe("storage cleanup reports and local file policies", () => {
         // Newer Git refuses to create a tag named HEAD, but still reads one.
         yield* command(worktree, ["update-ref", "refs/tags/HEAD", "refs/heads/feature"]);
         yield* command(worktree, ["switch", "feature"]);
+        expect((yield* service.runNow).entries[0]).toMatchObject(changed);
+        expect(threadBranches()).toEqual(["feature"]);
         const index = (yield* command(worktree, ["rev-parse", "--git-path", "index"])).stdout;
         yield* fs.writeFileString(`${index.trim()}.lock`, "");
         const locked = (yield* service.runNow).entries[0];
